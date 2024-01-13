@@ -1,19 +1,18 @@
-node {
-  
-  def image
-  def mvnHome = tool 'Maven3'
+pipeline {
+    agent any
 
-  
-     stage ('checkout') {
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '9ffd4ee4-3647-4a7d-a357-5e8746463282', url: 'https://bitbucket.org/ananthkannan/myawesomeangularapprepo/']]])       
-        }
+   
     
-    
-    stage ('Build') {
-            sh 'mvn -f MyAwesomeApp/pom.xml clean install'            
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Shantanux/project.git']]])
+            }
         }
         
-    stage ('archive') {
-            archiveArtifacts '**/*.jar'
+        stage('Build jar') {
+            steps {
+                sh "mvn clean install"
+            }
         }
-}
+    } }
