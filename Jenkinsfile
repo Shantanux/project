@@ -1,37 +1,19 @@
-@Library('jenkins-shared-library') _
+node {
+  
+  def image
+  def mvnHome = tool 'Maven3'
 
-pipeline{
-
-    agent any
-
+  
+     stage ('checkout') {
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '9ffd4ee4-3647-4a7d-a357-5e8746463282', url: 'https://bitbucket.org/ananthkannan/myawesomeangularapprepo/']]])       
+        }
     
-
-    stages{
-         
-        stage('Git Checkout'){
-                    
-            steps{
-            gitCheckout(
-                branch: "main",
-                url: "https://github.com/Shantanux/project.git"
-            )
-            }
+    
+    stage ('Build') {
+            sh 'mvn -f MyAwesomeApp/pom.xml clean install'            
         }
-           stage('Unit Test maven'){
-                    
-            steps{
-                script { 
-                    mvnTest()
-                }
-            }
+        
+    stage ('archive') {
+            archiveArtifacts '**/*.jar'
         }
- stage('Integration Test maven'){
-                    
-            steps{
-                script { 
-                   mvnIntegrationTest ()
-                    }
-    }
-    }
-    }
 }
